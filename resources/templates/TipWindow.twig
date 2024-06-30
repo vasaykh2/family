@@ -1,0 +1,80 @@
+{% if id is not defined %}{% set id = random() %}{% endif %}
+
+<div id="makeroi-tip-in-field-{{ id }}" data-name="{{ name }}" class="makeroi-tip-in-field custom-scroll">
+    {% block css %}
+        <style>
+            #makeroi-tip-in-field-{{ id }} {
+                max-height: 300px;
+                background-color: #fff;
+                border: 1px solid #dfdfdf;
+                z-index: 15;
+                position: absolute;
+                overflow: scroll;
+                overflow-x: hidden;
+            }
+            #makeroi-tip-in-field-{{ id }} .makeroi-tip-in-field__find-wrapper {
+                display: flex;
+                align-items: center;
+                padding: 7px 7px 7px 12px;
+            }
+            #makeroi-tip-in-field-{{ id }} .makeroi-tip-in-field__list-item {
+                padding: 7px 7px 7px 12px;
+                cursor: pointer;
+            }
+            #makeroi-tip-in-field-{{ id }} .makeroi-tip-in-field__list-item:hover {
+                background-color: #f2f2f2;
+            }
+            #makeroi-tip-in-field-{{ id }} .makeroi-tip-in-field__find-icon {
+                width: 16px;
+            }
+            #makeroi-tip-in-field-{{ id }} .makeroi-tip-in-field__find-icon svg {
+                width: 100%;
+                height: 100%
+            }
+            #makeroi-tip-in-field-{{ id }} .makeroi-tip-in-field__find-input input {
+                border: none;
+                border-radius: 0;
+                border-bottom: 1px solid #dfdfdf;
+                height: 25px;
+                width: 100%;
+            }
+            #makeroi-tip-in-field-{{ id }} .makeroi-tip-in-field__find-input {
+                margin-left: 5px;
+                flex: 1;
+            }
+            #makeroi-tip-in-field-{{ id }} .makeroi-tip-in-field__item-value-input {
+                position: absolute;
+                visibility: hidden;
+                opacity: 0;
+            }
+            #makeroi-tip-in-field-{{ id }} .tip-hidden {
+                display: none;
+            }
+        </style>
+    {% endblock %}
+    <div class="makeroi-tip-in-field__find-wrapper">
+        <div class="makeroi-tip-in-field__find-icon">
+            <svg width="9" height="9" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.12891 5.32382C6.62656 4.64465 6.84945 3.80259 6.753 2.96612C6.65654 2.12964 6.24785 1.36043 5.60868 0.812387C4.96952 0.264341 4.14703 -0.0221283 3.30575 0.0102921C2.46447 0.0427126 1.66645 0.391632 1.07135 0.987243C0.476251 1.58285 0.127952 2.38123 0.096138 3.22265C0.0643241 4.06407 0.351341 4.88648 0.899768 5.52534C1.44819 6.1642 2.21758 6.5724 3.05401 6.66827C3.89044 6.76414 4.73222 6.54062 5.41094 6.04241H5.41042C5.42584 6.06297 5.44229 6.08251 5.46079 6.10152L7.43947 8.08048C7.53583 8.17693 7.66656 8.23114 7.8029 8.23119C7.93923 8.23124 8.07 8.17712 8.16644 8.08074C8.26287 7.98435 8.31708 7.8536 8.31713 7.71725C8.31717 7.5809 8.26306 7.45011 8.16669 7.35366L6.18802 5.37471C6.16964 5.35611 6.14988 5.33892 6.12891 5.32331V5.32382ZM6.26151 3.34795C6.26151 3.71921 6.1884 4.08683 6.04634 4.42983C5.90429 4.77282 5.69608 5.08448 5.4336 5.347C5.17111 5.60952 4.8595 5.81776 4.51656 5.95983C4.17361 6.1019 3.80604 6.17503 3.43483 6.17503C3.06363 6.17503 2.69606 6.1019 2.35311 5.95983C2.01016 5.81776 1.69855 5.60952 1.43607 5.347C1.17359 5.08448 0.965375 4.77282 0.823321 4.42983C0.681267 4.08683 0.608153 3.71921 0.608153 3.34795C0.608153 2.59816 0.905963 1.87909 1.43607 1.34891C1.96617 0.818726 2.68515 0.520874 3.43483 0.520874C4.18451 0.520874 4.90349 0.818726 5.4336 1.34891C5.9637 1.87909 6.26151 2.59816 6.26151 3.34795Z" fill="#CDCDCD"/>
+            </svg>
+        </div>
+        <div class="makeroi-tip-in-field__find-input">
+            {{
+                widget.render({ ref: '/tmpl/controls/input.twig' }, {
+                    name: 'find'
+                })
+            }}
+        </div>
+    </div>
+    <div class="makeroi-tip-in-field__list">
+
+    </div>
+
+
+    {% block javascripts %}
+        <script>
+
+
+        </script>
+    {% endblock %}
+</div>
