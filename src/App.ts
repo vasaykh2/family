@@ -1,13 +1,17 @@
 // @ts-ignore
 import { createApp } from "vue";
 import families from "./assets/families.json";
-// @ts-ignore
-import AttachFamilyModal from "../resources/vue/AttachFamilyModal.vue";
-import config from "./config.ts";
+import AttachFamilyModal from "./Templates/AttachFamilyModal.vue";
+import AddFamilyButton from "./Templates/AddFamilyButton.vue";
+import config from "./config";
+// import "./assets/global.scss";
+
 export default class App {
   protected amoWidget: unknown;
   protected mode: string;
   protected AmoCRM = (window as any).APP;
+
+  showAttachModal = false;
 
   constructor(amoWidget: unknown, mode: string) {
     this.amoWidget = amoWidget;
@@ -183,64 +187,73 @@ export default class App {
     const modalId = Math.random();
     const arrOfFamilies = families.families;
 
-    // const AttachFamilyModalComponent = createApp({
-    //   template: `
-    //     <AttachFamilyModal :families="families" :id="id" />
-    //   `,
-    //   components: {
-    //     AttachFamilyModal,
-    //   },
-    //   data() {
-    //     return {
-    //       id: modalId,
-    //       families: arrOfFamilies,
-    //     };
-    //   },
-    // });
-    // // Удаляем предыдущие модальные окна, если есть
-    // $(".modal-overlay").remove();
+    this.showAttachModal = true;
+    const $body = $("body").find("#card_holder");
+    const AttachFamilyModalComponent = createApp(AttachFamilyModal as any, {
+      // modalId: modalId,
+      newFamilyId: modalId,
+      families: arrOfFamilies,
+      // attachFamily: this.handleAttachFamily.bind(this),
+      // viewContacts: this.handleViewContacts.bind(this),
+      // createFamily: this.handleCreateFamily.bind(this),
+    });
 
-    const $attachFamilyModal: any = $(
-      await this.render("AttachFamilyModal", {
-        id: modalId,
-        families: arrOfFamilies,
-      })
+    const AddFamilyButtonComponent = createApp(AddFamilyButton as any, {
+      title: "string",
+      limit: 12,
+      loading: false,
+    });
+
+    // const AttachFamilyModalComponent =
+    //   (AttachFamilyModal as any,
+    //   {
+    //     newFamilyId: modalId,
+    //     families: arrOfFamilies,
+    //   });
+
+    // AttachFamilyModalComponent.provide("newFamilyId", modalId);
+    // AttachFamilyModalComponent.provide("families", arrOfFamilies);
+
+    const $container = $(
+      '<div id="AttachFamilyModal" class="modal-overlay"></div>'
     );
-    $("#card_holder").append($attachFamilyModal);
+    AddFamilyButtonComponent.mount($container[0]);
+    $body.append($container);
 
-    // const $attachFamilyModal =
-    //   AttachFamilyModalComponent.mount("#card_holder").$el;
-    // $attachFamilyModal.on("click", (e: any) => {
-    //   if (e.target === e.currentTarget) {
-    //     $(".modal-overlay").remove();
-    //   }
-    // });
-
-    // Добавляем обработчики событий и функциональность для модального окна
-    // Например, можно добавить обработчики для поиска, вывода списка семей и обработки действий пользователя.
+    $container.css({
+      position: "fixed",
+      top: "0",
+      left: "0",
+      width: "100%",
+      height: "100%",
+      backgroundColor: "rgba(242, 242, 242, 0.7)",
+      padding: "20px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1000,
+    });
 
     $("#card_holder").on("click", ".modal-overlay", (e: any) => {
       if (e.target === e.currentTarget) {
         $(".modal-overlay").remove();
       }
     });
+  }
 
-    // $("#card_holder #card_fields").on(
-    //   "focusin",
-    //   `[name="CFV[${config.country_field}]"]`,
-    //   async (e: any) => {
-    //     const $current = $(e.currentTarget);
-    //     console.debug("amoWidget", this.amoWidget, $current);
-    //     const $tip: any = $(
-    //       await this.render("TipWindow", {
-    //         name: "tips",
-    //         widget: this.amoWidget,
-    //       })
-    //     );
-    //     console.debug("tip", $tip);
-    //     $("body").append($tip);
-    //   }
-    // );
+  public handleAttachFamily(familyId: string) {
+    console.log("AttachFamily", familyId);
+    // ...
+  }
+
+  public handleViewContacts(memberId: string) {
+    console.log("ViewContacts", memberId);
+    // ...
+  }
+
+  public handleCreateFamily(familyId: string) {
+    console.log("CreateFamily", familyId);
+    // ...
   }
 
   public openEditFamilyModal(): void {

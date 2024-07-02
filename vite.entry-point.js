@@ -20,7 +20,10 @@ const writeFileContent = function (file, replaced, silence = false) {
 
 const entryPoint = ({pattern = '', mode = 'local', prefix = true}) => ({
     name: 'replace-entry-point',
+
     closeBundle: () => {
+        log('Начали преобразование файлов: ' + pattern);
+
         let files;
         if (pattern.includes('*')) files = fg.sync([`dist/${pattern}`]);
         else files = [`dist/${pattern}`]
@@ -30,7 +33,7 @@ const entryPoint = ({pattern = '', mode = 'local', prefix = true}) => ({
 
             // Удаление комментариев
             replaced = replaced
-                .replace(/([^:])\/\/.*?((\n)|(\r)|(\n\r)|(\r\n))/ig, '$1')
+                .replace(/(\s)\/\/.*?((\n)|(\r)|(\n\r)|(\r\n))/ig, '$1')
                 .replace(/(\/\*.*?\*\/)/g, '');
 
             // Добавление дат сборки
@@ -42,11 +45,9 @@ const entryPoint = ({pattern = '', mode = 'local', prefix = true}) => ({
                 .replace(/console\.(warn|log|error|info)/g, 'console.debug');
 
             if (!replaced.startsWith('define')) {
-                //replaced = replaced.replace(/([\w\W]*?)(\s*?)(define\(\[.*],function\(.*?\)\s*?\{)/, "$3$2$1");
-                replaced = replaced.replace(/([\w\W]*?)(\s*?)(define\(\[.*\],[\s]*function\(.*?\)\s*?\{)/, "$3$2$1");
-                //replaced = replaced.replace(/([\w\W]*)([\s]*)(define\(\[.*\],[\s]*function\(.*\)[\s]*\{)/, "$3$2$1");
-                //replaced = replaced.replace(/([\w\W]*)([\s]*)(define\(\[.*\],[\s]*function\(.*\)[\s]*\{[\s]*)/, "$3$2$1");
-                //console.debug(replaced.match(/([\w\W]*)([\s]*)(define\(\[.*\],[\s]*function\(.*\)[\s]*\{)/));
+                let regExp = /([\w\W]*?)(\s*?)(define\(\[.*],\s*function\(.*?\)\s*?\{)/;
+                replaced = replaced.substring(0, 5000).replace(regExp, "$3$2$1")
+                    + replaced.substring(5000)
             }
 
             log(`Добавили техническую информацию и очистили файл: ${file}`);
