@@ -1,0 +1,8 @@
+@import 'main.css';
+@import 'amo.css';
+
+.makeroi-widget {
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+}

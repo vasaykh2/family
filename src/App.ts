@@ -1,7 +1,9 @@
 // @ts-ignore
 import { createApp } from "vue";
 import families from "./assets/families.json";
-import AttachFamilyModal from "./Templates/AttachFamilyModal.vue";
+// import AttachFamilyModal from "./Templates/AttachFamilyModal.vue";
+import AttachFamilyModal from "./Templates/ui/AttachFamilyModal.vue";
+
 import AddFamilyButton from "./Templates/AddFamilyButton.vue";
 import config from "./config";
 // import "./assets/global.scss";
@@ -9,8 +11,14 @@ import config from "./config";
 export default class App {
   protected amoWidget: unknown;
   protected mode: string;
-  protected AmoCRM = (window as any).APP;
+  protected AmoCRM: any;
 
+  settings = {
+    familyField: config.family_field,
+    typeContactField: config.type_contact_field,
+    childOrparentField: config.child_field_or_parent,
+    modeInLeads: config.mode_in_leads,
+  };
   showAttachModal = false;
 
   constructor(amoWidget: unknown, mode: string) {
@@ -83,40 +91,21 @@ export default class App {
     return true;
   }
   public async onRender(): Promise<boolean> {
-    // const regionsData = regions;
-    // const countries = regionsData["Страны"];
-    // const dataArray = this.getArrayData(countries);
-    // const tips = this.getTips(dataArray);
+    $("head").append(
+      `<link type="text/css" rel="stylesheet" href="${
+        // @ts-ignore
+        this.amoWidget.params.path
+      }/style.css?v=${Date.now()}" >`
+    );
+
     // @ts-ignore
     console.debug("++++++ APP.data", this.AmoCRM.data);
     if (
       this.AmoCRM.data.current_entity === "contacts" &&
       this.AmoCRM.data.is_card
     ) {
-      const $familyField = `
-    <div class="linked-form__multiple-container" >
-        <div class="linked-form__field linked-form__field-text">
-          <div class="linked-form__field__label" title="Семья">
-            <span>Семья</span>
-          </div>
-          <div class="linked-form__field__value">
-          <input name="CFV[${config.family_field}]" class="linked-form__cf text-input" type="text" placeholder="..." spellcheck="false" autocomplete="off">
-          </div>       
-    </div>
-    </div> 
-`;
-      const $typeOfContactField = `    
-    <div class="linked-form__multiple-container" >
-        <div class="linked-form__field linked-form__field-text">
-          <div class="linked-form__field__label" title="Тип контакта">
-            <span>Тип контакта</span>
-          </div>
-          <div class="linked-form__field__value">
-          <input name="CFV[${config.type_contact_field}]" class="linked-form__cf text-input" type="text" placeholder="..." spellcheck="false" autocomplete="off">
-          </div>       
-    </div>
-    </div>    
-`;
+      const $familyField = `<input name="CFV[${this.settings.familyField}]">`;
+      const $typeOfContactField = `<input name="CFV[${this.settings.typeContactField}]">`;
       // Вставка на 4-ю и 5-ю позицию
       $(".linked-forms__group-wrapper_main")
         .children()
@@ -174,9 +163,7 @@ export default class App {
       // $familyFieldInput.on("input", checkFamilyField);
 
       $familyButton.on("click", async () => {
-        if ($familyFieldInput.val()) {
-          this.openEditFamilyModal();
-        } else {
+        if (!$familyFieldInput.val()) {
           await this.openAttachFamilyModal();
         }
       });
@@ -190,12 +177,8 @@ export default class App {
     this.showAttachModal = true;
     const $body = $("body").find("#card_holder");
     const AttachFamilyModalComponent = createApp(AttachFamilyModal as any, {
-      // modalId: modalId,
       newFamilyId: modalId,
       families: arrOfFamilies,
-      // attachFamily: this.handleAttachFamily.bind(this),
-      // viewContacts: this.handleViewContacts.bind(this),
-      // createFamily: this.handleCreateFamily.bind(this),
     });
 
     const AddFamilyButtonComponent = createApp(AddFamilyButton as any, {
@@ -204,73 +187,30 @@ export default class App {
       loading: false,
     });
 
-    // const AttachFamilyModalComponent =
-    //   (AttachFamilyModal as any,
-    //   {
-    //     newFamilyId: modalId,
-    //     families: arrOfFamilies,
-    //   });
-
-    // AttachFamilyModalComponent.provide("newFamilyId", modalId);
-    // AttachFamilyModalComponent.provide("families", arrOfFamilies);
-
     const $container = $(
-      '<div id="AttachFamilyModal" class="modal-overlay"></div>'
+      '<div id="FamilyContacts" class="family-contacts-container"></div>'
     );
-    AddFamilyButtonComponent.mount($container[0]);
+    AttachFamilyModalComponent.mount($container[0]);
     $body.append($container);
 
-    $container.css({
-      position: "fixed",
-      top: "0",
-      left: "0",
-      width: "100%",
-      height: "100%",
-      backgroundColor: "rgba(242, 242, 242, 0.7)",
-      padding: "20px",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 1000,
-    });
+    // $container.css({
+    //   position: "fixed",
+    //   top: "0",
+    //   left: "0",
+    //   width: "100%",
+    //   height: "100%",
+    //   backgroundColor: "rgba(242, 242, 242, 0.7)",
+    //   padding: "20px",
+    //   display: "flex",
+    //   justifyContent: "center",
+    //   alignItems: "center",
+    //   zIndex: 1000,
+    // });
 
     $("#card_holder").on("click", ".modal-overlay", (e: any) => {
       if (e.target === e.currentTarget) {
         $(".modal-overlay").remove();
       }
     });
-  }
-
-  public handleAttachFamily(familyId: string) {
-    console.log("AttachFamily", familyId);
-    // ...
-  }
-
-  public handleViewContacts(memberId: string) {
-    console.log("ViewContacts", memberId);
-    // ...
-  }
-
-  public handleCreateFamily(familyId: string) {
-    console.log("CreateFamily", familyId);
-    // ...
-  }
-
-  public openEditFamilyModal(): void {
-    // Реализуйте код для открытия модального окна "Редактировать семью"
-    const modalContent = `
-      <div id="edit-family-modal" class="modal">
-          <div class="modal-content">
-              <span class="close-button">&times;</span>
-              <h2>Редактировать семью</h2>
-              <div id="family-members">
-                  <!-- Динамически сгенерированный список членов семьи -->
-              </div>
-              <button id="detach-family">Открепить семью</button>
-          </div>
-      </div>
-  `;
-    $("body").append(modalContent);
-    // Здесь должен быть код для редактирования членов семьи
   }
 }

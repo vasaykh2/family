@@ -1,41 +1,41 @@
 // vite.config.js
-import { fileURLToPath, URL } from 'node:url';
-import { resolve } from 'path';
-import { defineConfig } from 'vite';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
-import zipPack from 'vite-plugin-zip-pack';
-import entryPoint from './vite.entry-point';
-import vue from '@vitejs/plugin-vue';
+import { fileURLToPath, URL } from "node:url";
+import { resolve } from "path";
+import { defineConfig } from "vite";
+import { viteStaticCopy } from "vite-plugin-static-copy";
+import zipPack from "vite-plugin-zip-pack";
+import entryPoint from "./vite.entry-point";
+import vue from "@vitejs/plugin-vue";
 
 export default defineConfig(({ mode }) => {
-  const isProduction = mode === 'production';
+  const isProduction = mode === "production";
 
   return {
     build: {
       sourcemap: !isProduction,
       minify: isProduction,
-      target: 'es2015',
+      target: "es2015",
       lib: {
-        entry: 'src/App.ts',
-        fileName: (format, entryName) => 'scripts/' + entryName + '.js',
-        name: 'amo-widget',
-        formats: ['amd'], // iife
+        entry: "src/App.ts",
+        fileName: (format, entryName) => "scripts/" + entryName + ".js",
+        name: "amo-widget",
+        formats: ["amd"], // iife
       },
       rollupOptions: {
         // make sure to externalize deps that shouldn't be bundled
         // into your library
         external: [
-          '$',
-          '_',
-          'jquery',
-          'backbone',
-          'underscore',
-          'clipboard',
-          'twigjs',
-          'moment',
-          'lib/components/base/modal',
-          'intl-tel-input',
-          'intl-tel-input-utils',
+          "$",
+          "_",
+          "jquery",
+          "backbone",
+          "underscore",
+          "clipboard",
+          "twigjs",
+          "moment",
+          "lib/components/base/modal",
+          "intl-tel-input",
+          "intl-tel-input-utils",
         ],
         output: {
           externalLiveBindings: false,
@@ -43,30 +43,34 @@ export default defineConfig(({ mode }) => {
           freeze: false,
           globals: {
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            'lib/components/base/modal': 'Modal',
-            'moment': 'moment',
+            "lib/components/base/modal": "Modal",
+            moment: "moment",
           },
           amd: {
-            forceJsExtensionForImports: true
+            forceJsExtensionForImports: true,
           },
         },
         watch: {
           include: [
-            './vite.config.js',
-            './resources/script.js',
-            './resources/**/*'
+            "./vite.config.js",
+            "./resources/script.js",
+            "./resources/**/*",
           ],
-          patterns: [
-            'src',
-            'resources'
-          ],
-          extensions: 'ts,json,sass,js,twig',
+          patterns: ["src", "resources"],
+          extensions: "ts,json,sass,js,twig",
         },
       },
     },
     css: {
       modules: {
-        localsConvention: 'camelCase',
+        localsConvention: "camelCase",
+      },
+      postcss: "./postcss.config.cjs",
+      // output: "./", //  Указываем выходную папку для CSS
+      preprocessorOptions: {
+        scss: {
+          // additionalData: `@import "@/styles/variables.scss";`
+        },
       },
     },
     plugins: [
@@ -75,48 +79,48 @@ export default defineConfig(({ mode }) => {
         targets: [
           {
             src: [
-              'resources/images/',
-              'resources/i18n/',
-              'resources/templates/',
+              "resources/images/",
+              "resources/i18n/",
+              "resources/templates/",
             ],
-            dest: '',
+            dest: "",
           },
           {
-            src: 'resources/external/*.js',
-            dest: 'external',
+            src: "resources/external/*.js",
+            dest: "external",
           },
           {
             src: `resources/manifest.json`,
-            dest: '',
-            rename: 'manifest.json',
+            dest: "",
+            rename: "manifest.json",
           },
           {
             src: `resources/script.js`,
-            dest: '',
-            rename: 'script.js'
+            dest: "",
+            rename: "script.js",
           },
         ],
       }),
-      entryPoint({pattern: 'scripts/*.js', mode: mode}),
+      entryPoint({ pattern: "scripts/*.js", mode: mode }),
       zipPack({
-        outFileName: 'widget.zip',
-        outDir: 'dist',
+        outFileName: "widget.zip",
+        outDir: "dist",
       }),
     ],
     resolve: {
       alias: {
-        '@': fileURLToPath(new URL('../src', import.meta.url)),
-        '@core': fileURLToPath(
-            new URL('../frontend-widget-core', import.meta.url)
+        "@": fileURLToPath(new URL("../src", import.meta.url)),
+        "@core": fileURLToPath(
+          new URL("../frontend-widget-core", import.meta.url)
         ),
-        '@resources': fileURLToPath(new URL('../resources', import.meta.url)),
-        '@assets': fileURLToPath(new URL('../src/assets', import.meta.url)),
-        '@t': fileURLToPath(new URL('../src/Templates', import.meta.url)),
-        '@shared': fileURLToPath(new URL('../src/shared', import.meta.url)),
+        "@resources": fileURLToPath(new URL("../resources", import.meta.url)),
+        "@assets": fileURLToPath(new URL("../src/assets", import.meta.url)),
+        "@t": fileURLToPath(new URL("../src/Templates", import.meta.url)),
+        "@shared": fileURLToPath(new URL("../src/shared", import.meta.url)),
       },
     },
     define: {
-      'process.env': {
+      "process.env": {
         NODE_ENV: mode,
       },
     },
